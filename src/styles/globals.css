@@ -1,3 +1,496 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+.content h1 {
+  letter-spacing: 0.01em;
+  font-size: 1.5em;
+  font-style: normal;
+  font-weight: 700;
+  color: #2bbc8a;
+  margin-top: 3rem;
+  margin-bottom: 1rem;
+  display: block;
+  -moz-osx-font-smoothing: grayscale;
+  -webkit-font-smoothing: antialiased;
+}
+
+.content h2 {
+  position: relative;
+  font-size: 1rem;
+  font-weight: 700;
+  text-transform: none;
+  letter-spacing: normal;
+  margin-top: 2rem;
+  margin-bottom: 0.5rem;
+  color: #383838;
+  display: block;
+}
+
+.content h3 {
+  font-size: 0.9rem;
+  font-weight: 700;
+  color: #383838;
+}
+
+.content h4,
+.content h5,
+.content h6 {
+  font-size: 0.9rem;
+  font-weight: 400;
+  color: #8c8c8c;
+  border-bottom: 1px dashed #8c8c8c;
+  display: inline;
+  text-decoration: none;
+}
+
+.content h3,
+.content h4,
+.content h5,
+.content h6 {
+  margin-top: 0.9rem;
+  margin-bottom: 0.5rem;
+}
+
+.content hr {
+  border: 1px dashed #8c8c8c;
+}
+
+.content strong {
+  font-weight: 700;
+}
+
+.content cite,
+.content em {
+  font-style: italic;
+}
+
+.content sub,
+.content sup {
+  font-size: 0.75em;
+  line-height: 0;
+  position: relative;
+  vertical-align: baseline;
+}
+
+.content sup {
+  top: -0.5em;
+}
+
+.content sub {
+  bottom: -0.2em;
+}
+
+.content small {
+  font-size: 0.85em;
+}
+
+.content abbr,
+.content acronym {
+  border-bottom: 1px dotted;
+}
+
+.content dl,
+.content ol,
+.content ul {
+  line-height: 1.725;
+}
+
+.content ol ol,
+.content ol ul,
+.content ul ol,
+.content ul ul {
+  margin-top: 0;
+  margin-bottom: 0;
+}
+
+.content ol {
+  list-style: decimal;
+  display: block;
+  margin-block-start: 1em;
+  margin-block-end: 1em;
+  margin-inline-start: 0px;
+  margin-inline-end: 0px;
+  padding-inline-start: 40px;
+}
+
+.content dt {
+  font-weight: 700;
+}
+
+.content table {
+  width: 100%;
+  font-size: 12px;
+  border-collapse: collapse;
+  text-align: left;
+}
+
+.content th {
+  font-size: 13px;
+  font-weight: 700;
+  color: #383838;
+  border-bottom: 1px dashed #ccc;
+  padding: 8px 8px;
+}
+
+.content td {
+  border-bottom: none;
+  padding: 9px 8px 0 8px;
+}
+
+.content {
+  flex: 1;
+  color: #383838;
+  padding: 0 24px;
+}
+
+.content p {
+  -moz-hyphens: auto;
+  -ms-hyphens: auto;
+  -webkit-hyphens: auto;
+  hyphens: auto;
+  margin: 14px 0;
+}
+
+.content code,
+.content pre {
+  -moz-hyphens: manual;
+  -ms-hyphens: manual;
+  -webkit-hyphens: manual;
+  hyphens: manual;
+}
+
+.content .highlight a {
+  color: #dccf8f;
+}
+
+.content .highlight a:hover {
+  background-image: none;
+}
+
+.content a {
+  text-decoration: none;
+  color: #383838;
+  background-repeat: repeat-x;
+  background-position: bottom;
+  background-size: 100% 6px;
+  background-image: linear-gradient(transparent, transparent 5px, #383838 5px, #383838);
+}
+
+.content a:hover {
+  background-image: linear-gradient(transparent, transparent 4px, #d480aa 4px, #d480aa);
+}
+
+.content a.icon {
+  background: 0 0;
+}
+
+.content a.icon:hover {
+  color: #d480aa;
+}
+
+.content h1 a,
+.content h2 a,
+.content h3 a,
+.content h4 a,
+.content h5 a,
+.content h6 a {
+  color: inherit;
+  text-decoration: none;
+  background: 0 0;
+}
+
+.content h1 a:hover,
+.content h2 a:hover,
+.content h3 a:hover,
+.content h4 a:hover,
+.content h5 a:hover,
+.content h6 a:hover {
+  background-repeat: repeat-x;
+  background-position: bottom;
+  background-size: 100% 6px;
+  background-image: linear-gradient(transparent, transparent 6px, #d480aa 6px, #d480aa);
+}
+
+@media (min-width: 480px) {
+  p {
+    text-align: justify;
+  }
+}
+
+.highlight {
+  color: #dccf8f;
+  background: repeat scroll left top #181914;
+}
+
+.highlight .code .comment,
+.highlight .code .quote {
+  color: #586e75;
+  font-style: italic;
+}
+
+.highlight .code .addition,
+.highlight .code .keyword,
+.highlight .code .literal,
+.highlight .code .selector-tag {
+  color: #b64926;
+}
+
+.highlight .code .doctag,
+.highlight .code .number,
+.highlight .code .regexp,
+.highlight .code .string {
+  color: #468966;
+}
+
+.highlight .code .built_in,
+.highlight .code .name,
+.highlight .code .section,
+.highlight .code .title {
+  color: #ffb03b;
+}
+
+.highlight .code .class .title,
+.highlight .code .tag,
+.highlight .code .template-variable,
+.highlight .code .type,
+.highlight .code .variable {
+  color: #b58900;
+}
+
+.highlight .code .attribute {
+  color: #b89859;
+}
+
+.highlight .code .bullet,
+.highlight .code .link,
+.highlight .code .meta,
+.highlight .code .subst,
+.highlight .code .symbol {
+  color: #cb4b16;
+}
+
+.highlight .code .deletion {
+  color: #dc322f;
+}
+
+.highlight .code .selector-class,
+.highlight .code .selector-id {
+  color: #d3a60c;
+}
+
+.highlight .code .formula {
+  background: #073642;
+}
+
+.highlight .code .emphasis {
+  font-style: italic;
+}
+
+.highlight .code .strong {
+  font-weight: 700;
+}
+
+pre {
+  font-family: Menlo, "Meslo LG", monospace;
+  font-size: 13px;
+  padding: 0 15px;
+  padding-bottom: 0;
+  line-height: 22px;
+  -webkit-border-radius: 4px;
+  border-radius: 4px;
+  border: 1px dotted #666;
+  overflow-x: auto;
+  margin: 1em 0;
+}
+
+code {
+  -webkit-border-radius: 2px;
+  border-radius: 2px;
+  background: #eee;
+  padding: 0 5px;
+}
+
+pre code {
+  border: none;
+  display: block;
+  padding: 0;
+}
+
+.highlight {
+  font-family: Menlo, "Meslo LG", monospace;
+  -webkit-border-radius: 4px;
+  border-radius: 4px;
+  padding: 0 15px;
+  overflow-x: auto;
+  margin: 1rem 0 1rem 0;
+}
+
+.highlight figcaption {
+  zoom: 1;
+  margin: -5px 0 5px;
+  font-size: 0.9em;
+  color: #999;
+}
+
+.highlight figcaption a {
+  float: right;
+}
+
+/* .highlight figcaption content: "", */
+.highlight figcaption:before {
+  display: table;
+}
+
+.highlight figcaption:after {
+  clear: both;
+}
+
+.highlight pre {
+  padding: 0;
+  border: none;
+  background: 0 0;
+}
+
+.highlight table {
+  width: auto;
+}
+
+.highlight td.gutter {
+  text-align: right;
+}
+
+.highlight .line {
+  height: 22px;
+}
+
+article header .posttitle {
+  margin-top: 0;
+  margin-bottom: 0;
+  text-transform: none;
+  font-size: 1.5em;
+  line-height: 1.25;
+}
+
+article header .meta {
+  margin-top: 0;
+  margin-bottom: 1rem;
+}
+
+article header .meta * {
+  color: #8c8c8c;
+  font-size: 0.85rem;
+}
+
+article header .author {
+  text-transform: uppercase;
+  letter-spacing: 0.01em;
+  font-weight: 700;
+}
+
+article header .postdate {
+  display: inline;
+}
+
+article .content h2:before {
+  content: "#";
+  color: #2bbc8a;
+  position: absolute;
+  left: -1rem;
+  top: -4px;
+  font-size: 1.2rem;
+  font-weight: 700;
+}
+
+article .content img,
+article .content video {
+  max-width: 100%;
+  height: auto;
+  margin: auto;
+}
+
+article .content .video-container {
+  position: relative;
+  padding-top: 56.25%;
+  height: 0;
+  overflow: hidden;
+}
+
+article .content .video-container embed,
+article .content .video-container iframe,
+article .content .video-container object {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  margin-top: 0;
+}
+
+article .content blockquote {
+  background: inherit;
+  color: #2bbc8a;
+  border-left: 0 solid #ccc;
+  margin: 1rem 10px;
+  padding: 0.5em 10px;
+  quotes: "\201C""\201D""\2018""\2019";
+}
+
+article .content blockquote p {
+  margin: 0;
+}
+
+article .content blockquote:before {
+  color: #2bbc8a;
+  content: "\201C";
+  font-size: 2em;
+  line-height: 0.1em;
+  margin-right: 0.25em;
+  vertical-align: -0.4em;
+}
+
+article .content blockquote footer {
+  color: #666;
+  font-size: 11px;
+  margin: line-height 0;
+}
+
+article .content blockquote footer a {
+  color: #666;
+  background-image: linear-gradient(transparent, transparent 5px, #666 5px, #666);
+}
+
+article .content blockquote footer a:hover {
+  color: #999;
+  background-image: linear-gradient(transparent, transparent 4px, #999 4px, #999);
+}
+
+article .content blockquote footer cite:before {
+  content: "—";
+  padding: 0 0.5em;
+}
+
+article .content .pullquote {
+  text-align: left;
+  width: 45%;
+  margin: 0;
+}
+
+article .content .pullquote.left {
+  margin-left: 0.5em;
+  margin-right: 1em;
+}
+
+article .content .pullquote.right {
+  margin-right: 0.5em;
+  margin-left: 1em;
+}
+
+article .content .caption {
+  color: color-grey;
+  display: block;
+  font-size: 0.9em;
+  margin-top: 0.5em;
+  position: relative;
+  text-align: center;
+}

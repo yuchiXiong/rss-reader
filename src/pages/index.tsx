@@ -1,143 +1,139 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import Head from 'next/head';
-import { extract } from '@extractus/feed-extractor';
-import { GithubOne } from '@icon-park/react';
+import { GithubOne, Link as LinkIcon } from '@icon-park/react';
 import { getRelativeTimeString } from '@/utils';
 import Link from 'next/link';
+import AddRSSLinkModal from '@/components/add-rss-link-modal';
+import { FeedData } from './api/pull';
 
-const LINKS = [
-  'https://xiongyuchi.top/atom.xml',
-  'https://coderemixer.com/atom.xml',
-];
+export const USELESS_RSS_LINKS = 'USELESS_RSS_LINKS';
 
-export interface IRss {
-  author: {
-    name: string;
-  },
-  title: string,
-  link: string,
-  entry: IEntry[],
-  updated: string,
-  icon: string,
-  id: string,
-}
-
-export interface IEntry {
-  category: {
-    '@_term': string,
-    '@_scheme': string,
-  }[],
-  content: string,
-  id: string,
-  link: string,
-  published: string,
-  summary: string,
-  title: string,
-  updated: string,
-}
-
-export async function getServerSideProps() {
-
-  return {
-    props: {
-      rss: [await extract(LINKS[0], { descriptionMaxLen: Infinity, normalization: false })]
-    }
-  };
-}
-
-export default function Home({ rss = [] }: { rss: IRss[] }) {
-  const [current, setCurrent] = useState<string>(rss[0]?.link || '');
-  const [expanded, setExpanded] = useState<string>('');
-  const [rssList, setRssList] = useState<IRss[]>(rss);
+export default function Home() {
+  const [currentAuthor, setCurrentAuthor] = useState<string>('');
+  const [currentPost, setCurrentPost] = useState<string>('');
+  const [rssList, setRssList] = useState<FeedData[]>([]);
+  const [visible, setVisible] = useState<boolean>(false);
 
   useEffect(() => {
-    Promise.all(LINKS.map(async (link) => extract(link, { descriptionMaxLen: Infinity, normalization: false }))).then((rss) => {
-      setRssList(rss as IRss[]);
-    });
+    fetchDate();
   }, []);
 
-  const handleArticleClick = (link: string) => {
-    if (expanded === link) {
-      setExpanded('');
-    } else {
-      setExpanded(link);
-    }
+  const fetchDate = () => {
+    const linksQuery = (JSON.parse(localStorage.getItem(USELESS_RSS_LINKS) || '[]') as string[]).map(link => `links=${link}`).join('&');
+
+    fetch(`/api/pull?${linksQuery}`).then(result => result.json()).then((rss: FeedData[]) => {
+      setRssList(rss);
+      setCurrentAuthor(rss[0]?.link || '');
+      setCurrentPost(rss[0]?.items[0]?.link || '')
+    });
   }
 
   return (
-    <section className='flex flex-col h-screen overflow-hidden'>
+    <section className='flex flex-col h-screen'>
+      <AddRSSLinkModal
+        visible={visible}
+        handleClose={() => setVisible(false)}
+        afterSubmit={fetchDate}
+      />
+
       <Head>
-        <title>RSS Reader | 不太专业的 RSS 阅读器</title>
-        <meta name="description" content="rss reader" />
+        <title>RSS Reader | 一无是处的 RSS 阅读器</title>
+        <meta name="description" content="RSS Reader | 一无是处的 RSS 阅读器" />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <link rel="icon" href="/favicon.ico" />
       </Head>
-      <header className='w-full h-12 border-gray-200 border-b box-border bg-white flex items-center py-4 px-8'>
+      <header className='box-border flex items-center w-full h-12 px-8 py-4 bg-white border-b border-gray-200'>
         <GithubOne theme="outline" size="24" fill="#000000" className='ml-auto cursor-pointer' onClick={() => window.open('https://github.com/yuchiXiong', '_black')} />
       </header>
-      <main className='bg-gray-200 flex flex-1 h-full'>
-        <aside className='w-2/12 sticky'>
-          <div className='flex flex-col items-center h-full max-h-full bg-white'>
+      <main className='flex flex-1 h-0 bg-gray-200'>
+        {/* 订阅列表 */}
+        <aside className='w-2/12 border-gray-100'>
+          <div className='flex flex-col items-center h-full max-h-full overflow-y-auto bg-white'>
             {rssList.map((rss) => (
               <div
                 key={rss.link}
                 className={[
                   'flex cursor-pointer border-b border-gray-100  p-4 h-12 w-full justify-between items-center',
-                  current === rss.link ? 'bg-gray-100' : ''
+                  currentAuthor === rss.link ? 'bg-gray-100' : ''
                 ].join(' ')}
-                onClick={() => setCurrent(rss!.link as string)}
+                onClick={() => setCurrentAuthor(rss!.link as string)}
               >
-                <span className='font-semibold text-sm'>{rss.title}</span>
-                <span className='font-semibold text-gray-500 text-xs'>{rss.entry?.length || 0}</span>
+                <span className='text-sm font-semibold'>{rss.title}</span>
+                <span className='text-xs font-semibold text-gray-500'>{rss.items?.length || 0}</span>
               </div>
             ))}
             <div
-              className='text-center mt-auto text-sm cursor-pointer border-t border-gray-100  p-4 h-12 w-full justify-between items-center'
+              className='items-center justify-between w-full h-12 p-4 mt-auto text-sm text-center text-white border-t border-gray-100 cursor-pointer'
+              style={{ backgroundColor: '#2bbc8a' }}
+              onClick={() => setVisible(true)}
             >
               添加更多 RSS 订阅
             </div>
           </div>
         </aside>
-        <section className='p-4 w-10/12 flex h-full flex-col items-center justify-center '>
-          <div className='bg-white h-full w-full overflow-scroll'>
-            {rssList.find((rss) => rss.link === current)?.entry?.map((post) => (
-              <section
+
+        {/* 订阅的作者文章列表 */}
+        <aside className='w-2/12 border-l border-gray-200'>
+          <div className='flex flex-col items-center h-full max-h-full overflow-y-auto bg-white'>
+            {rssList.find(rss => rss.link === currentAuthor)?.items?.map((post) => (
+              <div
+                key={post.link}
+                className={[
+                  'flex flex-col cursor-pointer border-b border-gray-100  p-2 w-full',
+                  currentPost === post.link ? 'bg-gray-100' : ''
+                ].join(' ')}
+                onClick={() => setCurrentPost(post!.link as string)}
+              >
+                <span className='text-sm line-clamp-1'>{post.title}</span>
+                <small className='flex items-center mt-1 text-xs'>
+                  <span className='font-normal text-gray-400'>from {rssList.find(rss => rss.link === currentAuthor)?.title}</span>
+                  {post.isoDate && <span className='ml-2'>{getRelativeTimeString(new Date(post.isoDate))}</span>}
+                </small>
+              </div>
+            ))}
+          </div>
+        </aside>
+
+        {/* 文章内容 */}
+        <section className='flex flex-col w-8/12 h-full p-4'>
+          <div className='box-border flex-1 h-full overflow-y-scroll bg-white'>
+            {rssList.find((rss) => rss.link === currentAuthor)?.items?.filter(post => post.link === currentPost).map((post) => (
+              <article
                 key={post.id}
-                className='border-b border-gray-100 p-4 cursor-pointer hover:bg-gray-100 transition-all'
-                onClick={() => handleArticleClick(post.link)}
+                className='p-4 '
               >
                 <div className='flex items-center'>
-                  <div className='flex flex-col w-full'>
-                    <span className='font-semibold text-sm'>{post.title}</span>
-                    <small className='mt-1 flex w-full'>
+                  <div className='flex flex-col w-full pb-2 -mb-4 border-b-2 border-black'>
+                    <span className='text-base font-semibold'>
+                      <Link
+                        href={post.link as string}
+                        target="_blank"
+                        className='flex items-center border-gray-400 w-max'
+                      >
+                        {post.title}
+                        <LinkIcon theme="outline" size="18" fill="#000000" className='ml-1' />
+                      </Link></span>
+                    <small className='flex w-full mt-1'>
                       <span>
                         from&nbsp;
-                        <Link
-                          href={post.link as string}
-                          target="_blank"
-                          className='border-b border-gray-400'
-                        >
-                          {rssList.find(rss => rss.link === current)?.title}: {post.title}
-                        </Link>
+                        {rssList.find(rss => rss.link === currentAuthor)?.title}
                       </span>
-                      {post.published && (
+                      {post.isoDate && (
                         <span
-                          className='ml-auto text-gray-500 text-xs'
-                          title={new Date(post.published).toLocaleString()}
+                          className='ml-auto text-xs text-gray-500'
+                          title={new Date(post.isoDate).toLocaleString()}
                           suppressHydrationWarning
                         >
-                          {new Date(post.published).toLocaleDateString()} ({getRelativeTimeString(new Date(post.published))})
+                          {new Date(post.isoDate).toLocaleDateString()} ({getRelativeTimeString(new Date(post.isoDate))})
                         </span>
                       )}
                     </small>
                   </div>
                 </div>
-
-                <div className='mt-1 text-gray-400 text-sm'>
-                  <div dangerouslySetInnerHTML={{ __html: post.link === expanded ? post.content : post.summary }} />
+                <div className='mt-2 text-sm text-gray-400 content'>
+                  <div dangerouslySetInnerHTML={{ __html: post.content || '没有拉取到内容，您可以点击标题查看原文' }} />
                 </div>
-
-              </section>
+              </article>
             ))}
           </div>
         </section>
