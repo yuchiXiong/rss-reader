@@ -36,23 +36,15 @@ export interface IEntry {
   updated: string,
 }
 
-export async function getServerSideProps() {
-
-  return {
-    props: {
-      rss: [await extract(LINKS[0], { descriptionMaxLen: Infinity, normalization: false })]
-    }
-  };
-}
-
-export default function Home({ rss = [] }: { rss: IRss[] }) {
-  const [current, setCurrent] = useState<string>(rss[0]?.link || '');
+export default function Home() {
+  const [current, setCurrent] = useState<string>('');
   const [expanded, setExpanded] = useState<string>('');
-  const [rssList, setRssList] = useState<IRss[]>(rss);
+  const [rssList, setRssList] = useState<IRss[]>([]);
 
   useEffect(() => {
     Promise.all(LINKS.map(async (link) => extract(link, { descriptionMaxLen: Infinity, normalization: false }))).then((rss) => {
       setRssList(rss as IRss[]);
+      setCurrent(rss[0]?.link || '');
     });
   }, []);
 
@@ -65,18 +57,18 @@ export default function Home({ rss = [] }: { rss: IRss[] }) {
   }
 
   return (
-    <section className='flex flex-col h-screen overflow-hidden'>
+    <section className='flex flex-col h-screen'>
       <Head>
-        <title>RSS Reader | 不太专业的 RSS 阅读器</title>
-        <meta name="description" content="rss reader" />
+        <title>RSS Reader | 一无是处的 RSS 阅读器</title>
+        <meta name="description" content="RSS Reader | 一无是处的 RSS 阅读器" />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <link rel="icon" href="/favicon.ico" />
       </Head>
-      <header className='w-full h-12 border-gray-200 border-b box-border bg-white flex items-center py-4 px-8'>
+      <header className='box-border flex items-center w-full h-12 px-8 py-4 bg-white border-b border-gray-200'>
         <GithubOne theme="outline" size="24" fill="#000000" className='ml-auto cursor-pointer' onClick={() => window.open('https://github.com/yuchiXiong', '_black')} />
       </header>
-      <main className='bg-gray-200 flex flex-1 h-full'>
-        <aside className='w-2/12 sticky'>
+      <main className='flex flex-1 h-0 bg-gray-200'>
+        <aside className='w-2/12'>
           <div className='flex flex-col items-center h-full max-h-full bg-white'>
             {rssList.map((rss) => (
               <div
@@ -87,29 +79,29 @@ export default function Home({ rss = [] }: { rss: IRss[] }) {
                 ].join(' ')}
                 onClick={() => setCurrent(rss!.link as string)}
               >
-                <span className='font-semibold text-sm'>{rss.title}</span>
-                <span className='font-semibold text-gray-500 text-xs'>{rss.entry?.length || 0}</span>
+                <span className='text-sm font-semibold'>{rss.title}</span>
+                <span className='text-xs font-semibold text-gray-500'>{rss.entry?.length || 0}</span>
               </div>
             ))}
             <div
-              className='text-center mt-auto text-sm cursor-pointer border-t border-gray-100  p-4 h-12 w-full justify-between items-center'
+              className='items-center justify-between w-full h-12 p-4 mt-auto text-sm text-center border-t border-gray-100 cursor-pointer'
             >
               添加更多 RSS 订阅
             </div>
           </div>
         </aside>
-        <section className='p-4 w-10/12 flex h-full flex-col items-center justify-center '>
-          <div className='bg-white h-full w-full overflow-scroll'>
-            {rssList.find((rss) => rss.link === current)?.entry?.map((post) => (
+        <section className='flex flex-col w-10/12 h-full p-4'>
+          <div className='box-border flex-1 h-full overflow-y-scroll bg-white'>
+            {rssList.find((rss) => rss.link === current)?.entry?.slice(0, 1000).map((post) => (
               <section
                 key={post.id}
-                className='border-b border-gray-100 p-4 cursor-pointer hover:bg-gray-100 transition-all'
+                className='p-4 transition-all border-b border-gray-100 cursor-pointer hover:bg-gray-100'
                 onClick={() => handleArticleClick(post.link)}
               >
                 <div className='flex items-center'>
                   <div className='flex flex-col w-full'>
-                    <span className='font-semibold text-sm'>{post.title}</span>
-                    <small className='mt-1 flex w-full'>
+                    <span className='text-sm font-semibold'>{post.title}</span>
+                    <small className='flex w-full mt-1'>
                       <span>
                         from&nbsp;
                         <Link
@@ -122,7 +114,7 @@ export default function Home({ rss = [] }: { rss: IRss[] }) {
                       </span>
                       {post.published && (
                         <span
-                          className='ml-auto text-gray-500 text-xs'
+                          className='ml-auto text-xs text-gray-500'
                           title={new Date(post.published).toLocaleString()}
                           suppressHydrationWarning
                         >
@@ -132,11 +124,9 @@ export default function Home({ rss = [] }: { rss: IRss[] }) {
                     </small>
                   </div>
                 </div>
-
-                <div className='mt-1 text-gray-400 text-sm'>
+                <div className='mt-1 text-sm text-gray-400'>
                   <div dangerouslySetInnerHTML={{ __html: post.link === expanded ? post.content : post.summary }} />
                 </div>
-
               </section>
             ))}
           </div>
