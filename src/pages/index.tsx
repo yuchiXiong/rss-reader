@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import Head from 'next/head';
 import { extract } from '@extractus/feed-extractor';
-import { GithubOne } from '@icon-park/react';
+import { GithubOne, Link as LinkIcon } from '@icon-park/react';
 import { getRelativeTimeString } from '@/utils';
 import Link from 'next/link';
 
@@ -37,24 +37,18 @@ export interface IEntry {
 }
 
 export default function Home() {
-  const [current, setCurrent] = useState<string>('');
-  const [expanded, setExpanded] = useState<string>('');
+  const [currentAuthor, setCurrentAuthor] = useState<string>('');
+  const [currentPost, setCurrentPost] = useState<string>('');
   const [rssList, setRssList] = useState<IRss[]>([]);
 
   useEffect(() => {
     Promise.all(LINKS.map(async (link) => extract(link, { descriptionMaxLen: Infinity, normalization: false }))).then((rss) => {
       setRssList(rss as IRss[]);
-      setCurrent(rss[0]?.link || '');
+      setCurrentAuthor(rss[0]?.link || '');
+      setCurrentPost(rss[0]?.entry[0]?.link || '')
     });
   }, []);
 
-  const handleArticleClick = (link: string) => {
-    if (expanded === link) {
-      setExpanded('');
-    } else {
-      setExpanded(link);
-    }
-  }
 
   return (
     <section className='flex flex-col h-screen'>
@@ -68,16 +62,17 @@ export default function Home() {
         <GithubOne theme="outline" size="24" fill="#000000" className='ml-auto cursor-pointer' onClick={() => window.open('https://github.com/yuchiXiong', '_black')} />
       </header>
       <main className='flex flex-1 h-0 bg-gray-200'>
-        <aside className='w-2/12'>
-          <div className='flex flex-col items-center h-full max-h-full bg-white'>
+        {/* 订阅列表 */}
+        <aside className='w-2/12 border-2 border-r border-gray-100'>
+          <div className='flex flex-col items-center h-full max-h-full overflow-y-auto bg-white'>
             {rssList.map((rss) => (
               <div
                 key={rss.link}
                 className={[
                   'flex cursor-pointer border-b border-gray-100  p-4 h-12 w-full justify-between items-center',
-                  current === rss.link ? 'bg-gray-100' : ''
+                  currentAuthor === rss.link ? 'bg-gray-100' : ''
                 ].join(' ')}
-                onClick={() => setCurrent(rss!.link as string)}
+                onClick={() => setCurrentAuthor(rss!.link as string)}
               >
                 <span className='text-sm font-semibold'>{rss.title}</span>
                 <span className='text-xs font-semibold text-gray-500'>{rss.entry?.length || 0}</span>
@@ -90,29 +85,51 @@ export default function Home() {
             </div>
           </div>
         </aside>
-        <section className='flex flex-col w-10/12 h-full p-4'>
+
+        {/* 订阅的作者文章列表 */}
+        <aside className='w-2/12'>
+          <div className='flex flex-col items-center h-full max-h-full overflow-y-auto bg-white'>
+            {rssList.find(rss => rss.link === currentAuthor)?.entry.map((post) => (
+              <div
+                key={post.link}
+                className={[
+                  'flex flex-col cursor-pointer border-b border-gray-100  p-2 w-full',
+                  currentPost === post.link ? 'bg-gray-100' : ''
+                ].join(' ')}
+                onClick={() => setCurrentPost(post!.link as string)}
+              >
+                <span className='text-sm line-clamp-1'>{post.title}</span>
+                <small className='flex items-center mt-1 text-xs'>
+                  <span className='font-normal text-gray-400'>from {rssList.find(rss => rss.link === currentAuthor)?.title}</span>
+                  <span className='ml-2'>{getRelativeTimeString(new Date(post.published))}</span>
+                </small>
+              </div>
+            ))}
+          </div>
+        </aside>
+
+        <section className='flex flex-col w-8/12 h-full p-4'>
           <div className='box-border flex-1 h-full overflow-y-scroll bg-white'>
-            {rssList.find((rss) => rss.link === current)?.entry?.slice(0, 1000).map((post) => (
+            {rssList.find((rss) => rss.link === currentAuthor)?.entry?.filter(post => post.link === currentPost).map((post) => (
               <article
                 key={post.id}
-                className='p-4 transition-all border-b border-gray-100 hover:bg-gray-100'
-                onClick={() => handleArticleClick(post.link)}
+                className='p-4 '
               >
                 <div className='flex items-center'>
-                  <div className='flex flex-col w-full'>
-                    <span className='text-sm font-semibold'>
+                  <div className='flex flex-col w-full pb-2 -mb-4 border-b-2 border-black'>
+                    <span className='text-base font-semibold'>
                       <Link
                         href={post.link as string}
                         target="_blank"
-                        className='border-gray-400 hover:border-b'
+                        className='flex items-center border-gray-400 w-max'
                       >
                         {post.title}
+                        <LinkIcon theme="outline" size="18" fill="#000000" className='ml-1' />
                       </Link></span>
                     <small className='flex w-full mt-1'>
                       <span>
                         from&nbsp;
-
-                        {rssList.find(rss => rss.link === current)?.title}
+                        {rssList.find(rss => rss.link === currentAuthor)?.title}
                       </span>
                       {post.published && (
                         <span
@@ -126,8 +143,8 @@ export default function Home() {
                     </small>
                   </div>
                 </div>
-                <div className={`mt-2 text-sm text-gray-400 ${post.link === expanded && 'content'}`}>
-                  <div dangerouslySetInnerHTML={{ __html: post.link === expanded ? post.content : post.summary }} />
+                <div className='mt-2 text-sm text-gray-400 content'>
+                  <div dangerouslySetInnerHTML={{ __html: post.content }} />
                 </div>
               </article>
             ))}

@@ -141,6 +141,7 @@
 .content {
   flex: 1;
   color: #383838;
+  padding: 0 24px;
 }
 
 .content p {
