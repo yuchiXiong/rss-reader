@@ -9,7 +9,6 @@
     "lint": "next lint"
   },
   "dependencies": {
-    "@extractus/feed-extractor": "^6.2.1",
     "@icon-park/react": "^1.4.2",
     "@types/node": "18.15.0",
     "@types/react": "18.0.28",
@@ -19,6 +18,8 @@
     "next": "13.2.4",
     "react": "18.2.0",
     "react-dom": "18.2.0",
+    "redis": "^4.6.5",
+    "rss-parser": "^3.12.0",
     "typescript": "4.9.5"
   },
   "devDependencies": {
