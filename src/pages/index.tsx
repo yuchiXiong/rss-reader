@@ -93,24 +93,26 @@ export default function Home() {
         <section className='flex flex-col w-10/12 h-full p-4'>
           <div className='box-border flex-1 h-full overflow-y-scroll bg-white'>
             {rssList.find((rss) => rss.link === current)?.entry?.slice(0, 1000).map((post) => (
-              <section
+              <article
                 key={post.id}
-                className='p-4 transition-all border-b border-gray-100 cursor-pointer hover:bg-gray-100'
+                className='p-4 transition-all border-b border-gray-100 hover:bg-gray-100'
                 onClick={() => handleArticleClick(post.link)}
               >
                 <div className='flex items-center'>
                   <div className='flex flex-col w-full'>
-                    <span className='text-sm font-semibold'>{post.title}</span>
+                    <span className='text-sm font-semibold'>
+                      <Link
+                        href={post.link as string}
+                        target="_blank"
+                        className='border-gray-400 hover:border-b'
+                      >
+                        {post.title}
+                      </Link></span>
                     <small className='flex w-full mt-1'>
                       <span>
                         from&nbsp;
-                        <Link
-                          href={post.link as string}
-                          target="_blank"
-                          className='border-b border-gray-400'
-                        >
-                          {rssList.find(rss => rss.link === current)?.title}: {post.title}
-                        </Link>
+
+                        {rssList.find(rss => rss.link === current)?.title}
                       </span>
                       {post.published && (
                         <span
@@ -124,10 +126,10 @@ export default function Home() {
                     </small>
                   </div>
                 </div>
-                <div className='mt-1 text-sm text-gray-400'>
+                <div className={`mt-2 text-sm text-gray-400 ${post.link === expanded && 'content'}`}>
                   <div dangerouslySetInnerHTML={{ __html: post.link === expanded ? post.content : post.summary }} />
                 </div>
-              </section>
+              </article>
             ))}
           </div>
         </section>
