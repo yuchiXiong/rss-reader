@@ -1,4 +1,4 @@
-import React, { FormEvent } from 'react';
+import React, { FormEvent, useRef } from 'react';
 import { CloseSmall } from '@icon-park/react';
 import { USELESS_RSS_LINKS } from '@/pages';
 
@@ -11,10 +11,11 @@ export default function AddRSSLinkModal({
   handleClose: () => void,
   afterSubmit?: () => void
 }) {
+  const inputRef = useRef<HTMLInputElement>(null);
 
   const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    const link: string = (e.target['link']?.value || '').trim();
+    const link: string = inputRef.current?.value.trim() || '';
     if (!link) return;
 
     fetch(`/api/pull?links=${link}`).then(result => result.json()).then((rss) => {
@@ -39,6 +40,7 @@ export default function AddRSSLinkModal({
           </div>
           {visible && (
             <input
+              ref={inputRef}
               type="url"
               name="link"
               className='w-full p-2 border border-gray-200 rounded-lg outline-none '

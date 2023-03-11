@@ -337,7 +337,8 @@ pre code {
   float: right;
 }
 
-.highlight figcaption content: "",.highlight figcaption:before {
+/* .highlight figcaption content: "", */
+.highlight figcaption:before {
   display: table;
 }
 
