@@ -1,6 +1,6 @@
 import { useEffect, useState, useRef } from 'react';
 import Head from 'next/head';
-import { GithubOne, Link as LinkIcon } from '@icon-park/react';
+import { GithubOne, Link as LinkIcon, Rss } from '@icon-park/react';
 import { getRelativeTimeString } from '@/utils';
 import Link from 'next/link';
 import AddRSSLinkModal from '@/components/add-rss-link-modal';
@@ -107,6 +107,18 @@ export default function Home() {
         {/* 文章内容 */}
         <section id="article" className='flex flex-col w-8/12 h-full p-4'>
           <div className='box-border flex-1 h-full overflow-y-scroll bg-white'>
+            {rssList.length === 0 && (
+              <div className='flex flex-col items-center justify-center flex-1 h-full'>
+                <div className='flex flex-col items-center justify-center w-1/2 h-1/2'>
+
+                  <h1 className='flex items-center text-2xl font-semibold text-center'>
+                    <Rss theme="outline" size="21" className='mr-1' fill="#000000" />
+                    一无是处的 RSS 阅读器
+                  </h1>
+                  <p className='mt-2 text-center'>点击左侧下方的添加按钮，添加你喜欢的 RSS 订阅</p>
+                </div>
+              </div>
+            )}
             {rssList.find((rss) => rss.link === currentAuthor)?.items?.filter(post => post.link === currentPost).map((post) => (
               <article
                 key={post.id}

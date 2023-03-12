@@ -27,6 +27,8 @@ export default async function handler(
 
   let { links } = req.query as { links: string[] };
 
+  if (!links) return res.status(200).json([]);
+
   if (!Array.isArray(links)) links = [links];
 
   const data = await Promise.all(links.map(async (link) => {
