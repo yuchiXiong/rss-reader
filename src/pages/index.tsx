@@ -28,6 +28,13 @@ export default function Home() {
     });
   }
 
+  const handleRssToggle = (rss: FeedData) => {
+    setCurrentAuthor(rss!.link as string);
+    setCurrentPost(rss.items[0].link);
+    document.querySelector('#posts > div')?.scrollTo(0, 0);
+    document.querySelector('#article > div')?.scrollTo(0, 0);
+  }
+
   return (
     <section className='flex flex-col h-screen'>
       <AddRSSLinkModal
@@ -56,7 +63,7 @@ export default function Home() {
                   'flex cursor-pointer border-b border-gray-100  p-4 h-12 w-full justify-between items-center',
                   currentAuthor === rss.link ? 'bg-gray-100' : ''
                 ].join(' ')}
-                onClick={() => setCurrentAuthor(rss!.link as string)}
+                onClick={() => handleRssToggle(rss)}
               >
                 <span className='text-sm font-semibold'>{rss.title}</span>
                 <span className='text-xs font-semibold text-gray-500'>{rss.items?.length || 0}</span>
@@ -73,7 +80,7 @@ export default function Home() {
         </aside>
 
         {/* 订阅的作者文章列表 */}
-        <aside className='w-2/12 border-l border-gray-200'>
+        <aside id="posts" className='w-2/12 border-l border-gray-200'>
           <div className='flex flex-col items-center h-full max-h-full overflow-y-auto bg-white'>
             {rssList.find(rss => rss.link === currentAuthor)?.items?.map((post) => (
               <div
@@ -82,7 +89,10 @@ export default function Home() {
                   'flex flex-col cursor-pointer border-b border-gray-100  p-2 w-full',
                   currentPost === post.link ? 'bg-gray-100' : ''
                 ].join(' ')}
-                onClick={() => setCurrentPost(post!.link as string)}
+                onClick={() => {
+                  setCurrentPost(post!.link as string);
+                  document.querySelector('#article > div')?.scrollTo(0, 0);
+                }}
               >
                 <span className='text-sm line-clamp-1'>{post.title}</span>
                 <small className='flex items-center mt-1 text-xs'>
@@ -95,7 +105,7 @@ export default function Home() {
         </aside>
 
         {/* 文章内容 */}
-        <section className='flex flex-col w-8/12 h-full p-4'>
+        <section id="article" className='flex flex-col w-8/12 h-full p-4'>
           <div className='box-border flex-1 h-full overflow-y-scroll bg-white'>
             {rssList.find((rss) => rss.link === currentAuthor)?.items?.filter(post => post.link === currentPost).map((post) => (
               <article
