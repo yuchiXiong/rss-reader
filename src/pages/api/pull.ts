@@ -27,18 +27,28 @@ export default async function handler(
 
   let { links } = req.query as { links: string[] };
 
+  if (!links) return res.status(200).json([]);
+
   if (!Array.isArray(links)) links = [links];
 
   const data = await Promise.all(links.map(async (link) => {
     const key = `useless-RSS:${link}`;
     const cached = await redis.get(key);
+    let json: FeedData;
+
     if (cached) {
-      return JSON.parse(cached);
+      json = JSON.parse(cached);
+
+      parser.parseURL(link).then((result) => {
+        if (JSON.stringify(result) !== JSON.stringify(json)) {
+          console.log('Updating cache for', link)
+          redis.set(key, JSON.stringify(result));
+        }
+      }, err => { });
+    } else {
+      json = await parser.parseURL(link) as FeedData;
+      redis.set(key, JSON.stringify(json));
     }
-
-    const json = await parser.parseURL(link);
-
-    redis.set(key, JSON.stringify(json));
 
     return json;
   }));
